@@ -20,13 +20,7 @@ public class SingleBranchShowStatisticsTest {
 	
 	@BeforeAll
 	public static void createGitRepositoryForTest() throws IOException, IllegalStateException, GitAPIException {
-		
-        gitTestDirectory = File.createTempFile("cvsm", ".test");
-        
-        if(!gitTestDirectory.delete()) {
-            throw new IOException("Could not delete previous file " + gitTestDirectory);
-        }
-        
+        gitTestDirectory = File.createTempFile("cvsm", ".test");        
         Git.init().setDirectory(gitTestDirectory).call();
 	}
 
