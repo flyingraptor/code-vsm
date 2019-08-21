@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -226,14 +227,8 @@ public class App
         		}
             }
             
-            
-         // prepare the two iterators to compute the diff between
-
-        
-            
-            
-            
-            //FileUtils.deleteDirectory(gitTestDirectory);
+           git.close(); 
+           FileUtils.deleteDirectory(gitTestDirectory);
         }
         
     }
