@@ -6,8 +6,6 @@ import java.util.stream.StreamSupport;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.errors.AmbiguousObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -24,8 +22,7 @@ class JGitBranchMetricsCalculator implements BranchMetricsCalculator {
 			repositoryBuilder.setGitDir(repoDirectory);
 		    gitRepository = repositoryBuilder.build();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new BranchMetricsCalculatorException(e.getMessage());
 		}
 	}
 
@@ -34,48 +31,41 @@ class JGitBranchMetricsCalculator implements BranchMetricsCalculator {
 		
 		Git git = new Git(gitRepository);
 		
-		RevCommit[] commitArr = null;
-		try {
-			commitArr = getCommitsArrayFromBranch(git, branchName);
-		} catch (RevisionSyntaxException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		RevCommit[] commits = getCommitsFromBranch(git, branchName);
 
         int previousCommitTime = 0;
         int elapsed = 0;
         
-        int lastCommitTime = commitArr[0].getCommitTime();
+        int currentCommitTime = commits[0].getCommitTime();
         
-        for(int i = 1; i<commitArr.length; i++) {     	
-    		previousCommitTime = commitArr[i].getCommitTime();
-    		elapsed += (lastCommitTime - previousCommitTime);
+        for(int i = 1; i<commits.length; i++) {     	
+    		previousCommitTime = commits[i].getCommitTime();
+    		elapsed += (currentCommitTime - previousCommitTime);
         }
  
-        int average = elapsed / (commitArr.length-1);
+        int average = elapsed / (commits.length-1);
 
         git.close();
 		
 		return average;	
 	}
 	
-	private RevCommit[] getCommitsArrayFromBranch(Git git, String branchName) throws RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
+	private RevCommit[] getCommitsFromBranch(Git git, String branchName) {
 		
         Iterable<RevCommit> commitIter = null;
         
 		try {
 			commitIter = git.log().add(git.getRepository().resolve("refs/heads/"+branchName)).call();
 		} catch (RevisionSyntaxException | GitAPIException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();	
 			git.close();
+			throw new BranchMetricsCalculatorException(e.getMessage());	
 		}
 		
-		RevCommit[] commitArr = 
+		RevCommit[] commitArray = 
 				StreamSupport.stream(commitIter.spliterator(), false)
 				.toArray(RevCommit[]::new);
 		
-		return commitArr;
+		return commitArray;
 	}
 	
 }
