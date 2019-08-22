@@ -21,15 +21,27 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
  * Hello world!
  *
  */
-public class App 
+public class cvsm 
 {
 	
 	private static File gitTestDirectory; 
 	
     public static void main( String[] args ) throws IllegalStateException, IOException, GitAPIException
-    {
-        System.out.println( "Hello World!" );
-        App.nucfield();
+    {	
+    	
+    	//args[0] repo path e.g. /Users/nikosraptis/repos/code-vsm/.git
+    	//args[1] git branch
+    	
+    	//"/Users/nikosraptis/repos/code-vsm/.git"
+    	//average-commit-waiting-time-single-branch
+    	
+    	BranchMetricsCalculator branchMetricsCalculator 
+    		= new JGitBranchMetricsCalculator(new File(args[0]));
+		Integer averageTimeInSeconds = branchMetricsCalculator.getAverageMeanCommitWaitingTimeInSeconds(args[1]);
+		
+		System.out.println(averageTimeInSeconds);
+    	
+        //App.nucfield();
     }
     
     private static void nucfield() throws IOException, IllegalStateException, GitAPIException {

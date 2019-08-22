@@ -6,9 +6,38 @@
   <artifactId>cvsm-git-parser</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
-
   <name>cvsm-git-parser</name>
   <url>http://maven.apache.org</url>
+  
+  <build>
+  	<finalName>cvsm-lib</finalName>
+  	<plugins>
+		<plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-assembly-plugin</artifactId>
+		    <executions>
+		        <execution>
+		            <phase>package</phase>
+		            <goals>
+		                <goal>single</goal>
+		            </goals>
+		            <configuration>
+		                <archive>
+		                <manifest>
+		                    <mainClass>org.code.vsm.git.parser.cvsm</mainClass>
+		                </manifest>
+		                </archive>
+		                <descriptorRefs>
+		                    <descriptorRef>jar-with-dependencies</descriptorRef>
+		                </descriptorRefs>
+		                <finalName>cvsm</finalName>
+        				<appendAssemblyId>false</appendAssemblyId>
+		            </configuration>
+		        </execution>
+		    </executions>
+		</plugin>  
+  	</plugins>
+  </build>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -50,5 +79,15 @@
 	    <artifactId>commons-io</artifactId>
 	    <version>2.6</version>
 	</dependency>
+<dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-api</artifactId>
+       <version>1.7.5</version>
+   </dependency>
+   <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-simple</artifactId>
+       <version>1.6.4</version>
+   </dependency>	
   </dependencies>
 </project>
