@@ -13,8 +13,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class GitBranchMetricsCalculatorUnitTest {
@@ -23,8 +23,8 @@ public class GitBranchMetricsCalculatorUnitTest {
 	
 	private static Repository gitRepository;
 	
-	@BeforeAll
-	public static void initRepository() throws IOException, IllegalStateException, GitAPIException, InterruptedException {
+	@BeforeEach
+	public void initRepository() throws IOException, IllegalStateException, GitAPIException, InterruptedException {
 			
     	gitTestDirectory = File.createTempFile("cvsm", ".test");  
     	if(!gitTestDirectory.delete()) {
@@ -37,10 +37,10 @@ public class GitBranchMetricsCalculatorUnitTest {
 	}
 	
 	@Test
-	void testAverageWaitingTimeForCommit_1HourBetweenTwoCommits() throws IOException, NoFilepatternException, GitAPIException {
+	void testAverageWaitingTimeForCommit_1HourBetween2Commits() throws IOException, NoFilepatternException, GitAPIException {
 		
 		//Setup
-		createTwoCommitsWith1hourDiff();
+		create2CommitsWith1hourDiff();
 		
 		//Execute Test
 		BranchMetricsCalculator branchMetricsCalculator = new JGitBranchMetricsCalculator(gitRepository.getDirectory());
@@ -50,7 +50,35 @@ public class GitBranchMetricsCalculatorUnitTest {
 		assertEquals(3600, averageTimeInSeconds); //3600 are the seconds for 1 hour
 	}
 	
-	private void createTwoCommitsWith1hourDiff() throws IOException, NoFilepatternException, GitAPIException {
+	@Test
+	void testAverageWaitingTimeForCommit_3CommitsSeparatedByDiffhours() throws IOException, NoFilepatternException, GitAPIException {
+		
+		//Setup
+		create3CommitsWith1hourDiff();
+		
+		//Execute Test
+		BranchMetricsCalculator branchMetricsCalculator = new JGitBranchMetricsCalculator(gitRepository.getDirectory());
+		Integer averageTimeInSeconds = branchMetricsCalculator.getAverageMeanCommitWaitingTimeInSeconds("master");
+		
+		//Assert
+		assertEquals(9000, averageTimeInSeconds);
+	}
+	
+	@Test
+	void testAverageWaitingTimeForCommit_2CommitsSeparatedBy10Years() throws IOException, NoFilepatternException, GitAPIException {
+		
+		//Setup
+		create2CommitsWith10yearsDiff();
+		
+		//Execute Test
+		BranchMetricsCalculator branchMetricsCalculator = new JGitBranchMetricsCalculator(gitRepository.getDirectory());
+		Integer averageTimeInSeconds = branchMetricsCalculator.getAverageMeanCommitWaitingTimeInSeconds("master");
+		
+		//Assert
+		assertEquals(315532800, averageTimeInSeconds); //315532800 are 10 years in seconds
+	}
+	
+	private void create2CommitsWith1hourDiff() throws IOException, NoFilepatternException, GitAPIException {
 		
 		Git git = new Git(gitRepository);
 		
@@ -66,6 +94,52 @@ public class GitBranchMetricsCalculatorUnitTest {
         
         //Make the 2nd Commit
         commitTimeInMillis = 1355310000000L; //12/12/2012 13:00:00
+        makeCommit(git, fileToChange, "testfileInRepo.txt", "Message - 2nd Commit", "Content - 2nd commit", commitTimeInMillis);
+        
+        git.close();
+	}
+	
+	private void create3CommitsWith1hourDiff() throws IOException, NoFilepatternException, GitAPIException {
+		
+		Git git = new Git(gitRepository);
+		
+        File fileToChange = new File(git.getRepository().getDirectory().getParent(), "testfileInRepo.txt");
+        if(!fileToChange.createNewFile()) {
+        	git.close();
+            throw new IOException("Could not create file " + fileToChange);
+        }
+		
+        //Make the 1st Commit
+        long commitTimeInMillis = 1355306400000L; //12/12/2012 12:00:00
+        makeCommit(git, fileToChange, "testfileInRepo.txt", "Message - 1st Commit", "Content - 1st commit", commitTimeInMillis);
+        
+        //Make the 2nd Commit
+        commitTimeInMillis = 1355310000000L; //12/12/2012 13:00:00
+        makeCommit(git, fileToChange, "testfileInRepo.txt", "Message - 2nd Commit", "Content - 2nd commit", commitTimeInMillis);
+        
+        //Make the 3d Commit
+        commitTimeInMillis = 1355324400000L; //12/12/2012 17:00:00
+        makeCommit(git, fileToChange, "testfileInRepo.txt", "Message - 2nd Commit", "Content - 3rd commit", commitTimeInMillis);
+        
+        git.close();
+	}
+	
+	private void create2CommitsWith10yearsDiff() throws IOException, NoFilepatternException, GitAPIException {
+		
+		Git git = new Git(gitRepository);
+		
+        File fileToChange = new File(git.getRepository().getDirectory().getParent(), "testfileInRepo.txt");
+        if(!fileToChange.createNewFile()) {
+        	git.close();
+            throw new IOException("Could not create file " + fileToChange);
+        }
+		
+        //Make the 1st Commit
+        long commitTimeInMillis = 1355306400000L; //12/12/2012 12:00:00
+        makeCommit(git, fileToChange, "testfileInRepo.txt", "Message - 1st Commit", "Content - 1st commit", commitTimeInMillis);
+        
+        //Make the 2nd Commit
+        commitTimeInMillis = 1670839200000L; //12/12/2022 12:00:00
         makeCommit(git, fileToChange, "testfileInRepo.txt", "Message - 2nd Commit", "Content - 2nd commit", commitTimeInMillis);
         
         git.close();
@@ -91,8 +165,8 @@ public class GitBranchMetricsCalculatorUnitTest {
             .call();
 	}
 	
-	@AfterAll
-	public static void destroyRepository() throws IOException {
+	@AfterEach
+	public void destroyRepository() throws IOException {
         FileUtils.deleteDirectory(gitTestDirectory);
 	}
 }

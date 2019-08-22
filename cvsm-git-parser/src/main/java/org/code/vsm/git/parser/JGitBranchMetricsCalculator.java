@@ -33,17 +33,24 @@ class JGitBranchMetricsCalculator implements BranchMetricsCalculator {
 		
 		RevCommit[] commits = getCommitsFromBranch(git, branchName);
 
-        int previousCommitTime = 0;
-        int elapsedTime = 0;
+        int previousCommitTime = 0; //Initialize
+        int elapsedTime = 0; //Initialize
         
-        int currentCommitTime = commits[0].getCommitTime();
+        int currentCommitTime = commits[0].getCommitTime(); //Get the HEAD commit
         
         for(int i = 1; i<commits.length; i++) {     	
     		previousCommitTime = commits[i].getCommitTime();
-    		elapsedTime += (currentCommitTime - previousCommitTime);
+    		elapsedTime = elapsedTime + (currentCommitTime - previousCommitTime);
+    		currentCommitTime = previousCommitTime;
         }
- 
-        int average = elapsedTime / (commits.length-1);
+     
+        /* 
+         * length-1 because we divide with the number of gaps 
+         * between commits NOT with the commits number. 
+         * For example for 2 commits there is 1 gap between them. 
+         * For 3 commits 2 gaps, 1 between 1st and 2nd and 1 between 2nd and 3rd.
+         */
+        int average = elapsedTime / (commits.length-1); 
 
         git.close();
 		
