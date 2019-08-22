@@ -21,7 +21,7 @@ class JGitBranchMetricsCalculator implements BranchMetricsCalculator {
 			repositoryBuilder.setMustExist(true);
 			repositoryBuilder.setGitDir(repoDirectory);
 		    gitRepository = repositoryBuilder.build();
-		} catch (IOException e) {
+		} catch (IOException | IllegalArgumentException | NullPointerException e) {
 			throw new BranchMetricsCalculatorException(e.getMessage());
 		}
 	}
@@ -63,7 +63,7 @@ class JGitBranchMetricsCalculator implements BranchMetricsCalculator {
         
 		try {
 			commitIter = git.log().add(git.getRepository().resolve("refs/heads/"+branchName)).call();
-		} catch (RevisionSyntaxException | GitAPIException | IOException e) {
+		} catch (RevisionSyntaxException | GitAPIException | IOException | NullPointerException e) {
 			git.close();
 			throw new BranchMetricsCalculatorException(e.getMessage());	
 		}

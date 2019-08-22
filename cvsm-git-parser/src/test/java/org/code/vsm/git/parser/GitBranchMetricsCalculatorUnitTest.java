@@ -14,6 +14,7 @@ import org.eclipse.jgit.api.errors.NoFilepatternException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -56,7 +57,7 @@ public class GitBranchMetricsCalculatorUnitTest {
 		//Setup
 		create3CommitsWith1hourDiff();
 		
-		//Execute Test
+		//Execute
 		BranchMetricsCalculator branchMetricsCalculator = new JGitBranchMetricsCalculator(gitRepository.getDirectory());
 		Integer averageTimeInSeconds = branchMetricsCalculator.getAverageMeanCommitWaitingTimeInSeconds("master");
 		
@@ -70,12 +71,59 @@ public class GitBranchMetricsCalculatorUnitTest {
 		//Setup
 		create2CommitsWith10yearsDiff();
 		
-		//Execute Test
+		//Execute
 		BranchMetricsCalculator branchMetricsCalculator = new JGitBranchMetricsCalculator(gitRepository.getDirectory());
 		Integer averageTimeInSeconds = branchMetricsCalculator.getAverageMeanCommitWaitingTimeInSeconds("master");
 		
 		//Assert
 		assertEquals(315532800, averageTimeInSeconds); //315532800 are 10 years in seconds
+	}
+	
+	@Test
+	void testAverageWaitingTimeForCommit_GiveNotExistingBranch() throws IOException, NoFilepatternException, GitAPIException {
+		
+		//Init class
+		BranchMetricsCalculator branchMetricsCalculator = new JGitBranchMetricsCalculator(gitRepository.getDirectory());
+		
+		//Execute and Assert that an exception thrown
+		Assertions.assertThrows(BranchMetricsCalculatorException.class, () -> 
+		{
+				branchMetricsCalculator.getAverageMeanCommitWaitingTimeInSeconds("wrongrepo");
+		});
+	}
+	
+	@Test
+	void testAverageWaitingTimeForCommit_GiveNullBranch() throws IOException, NoFilepatternException, GitAPIException {
+		
+		//Init class
+		BranchMetricsCalculator branchMetricsCalculator = new JGitBranchMetricsCalculator(gitRepository.getDirectory());
+		
+		//Execute and Assert that an exception thrown
+		Assertions.assertThrows(BranchMetricsCalculatorException.class, () -> 
+		{
+			branchMetricsCalculator.getAverageMeanCommitWaitingTimeInSeconds(null);
+		});
+	}
+
+	
+	@Test
+	void testAverageWaitingTimeForCommit_GiveNotExistingRepo() throws IOException, NoFilepatternException, GitAPIException {
+				
+		//Execute and Assert that an exception thrown
+		Assertions.assertThrows(BranchMetricsCalculatorException.class, () -> 
+		{
+			new JGitBranchMetricsCalculator(new File("dummy"));
+		});
+	}
+	
+	@Test
+	void testAverageWaitingTimeForCommit_GiveNullRepo() throws IOException, NoFilepatternException, GitAPIException {
+				
+		//Execute and Assert that an exception thrown
+		Assertions.assertThrows(BranchMetricsCalculatorException.class, () -> 
+		{
+			new JGitBranchMetricsCalculator(null);
+		});
 	}
 	
 	private void create2CommitsWith1hourDiff() throws IOException, NoFilepatternException, GitAPIException {
