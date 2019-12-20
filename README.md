@@ -1,2 +1,2 @@
 # code-vsm
-A tool that outputs a value stream mapping from your code flow
+A tool that outputs a value stream from your code flow and useful statistics
