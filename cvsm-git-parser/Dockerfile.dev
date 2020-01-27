@@ -21,7 +21,7 @@ WORKDIR /usr/src/app
 
 # install maven dependency packages (keep in image)
 COPY ./cvsm-git-parser/pom.xml /usr/src/app
-RUN ./cvsm-git-parser/mvn -T 1C install && rm -rf ./cvsm-git-parser/target
+RUN cd ./cvsm-git-parser && mvn -T 1C install && rm -rf ./target
 
 # copy other source files (keep in image)
 COPY src /usr/src/app/src
