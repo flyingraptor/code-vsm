@@ -24,4 +24,4 @@ COPY ./cvsm-git-parser/pom.xml /usr/src/app
 RUN mvn -T 1C install && rm -rf ./target
 
 # copy other source files (keep in image)
-COPY src /usr/src/app/src
+COPY ./cvsm-git-parser/src /usr/src/app/src
