@@ -20,8 +20,9 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 # install maven dependency packages (keep in image)
-COPY ./cvsm-git-parser/pom.xml /usr/src/app
-RUN cd ./cvsm-git-parser && mvn -T 1C install && rm -rf ./target
+WORKDIR "./cvsm-git-parser/"
+COPY pom.xml /usr/src/app
+RUN mvn -T 1C install && rm -rf ./target
 
 # copy other source files (keep in image)
 COPY src /usr/src/app/src
