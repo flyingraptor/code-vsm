@@ -3,7 +3,7 @@ services:
 	- docker
 
 before_install:
-	- docker build -f Dockerfile.dev -t flyingraptor/cvsm-parser-dev .
+	- docker build -f ./cvsm-git-parser/Dockerfile.dev -t flyingraptor/cvsm-parser-dev .
 
 script:
 	- docker run -it --rm -v "$PWD"/target:/usr/src/app/target flyingraptor/cvsm-parser-dev -T 1C -o test
