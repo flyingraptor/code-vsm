@@ -7,7 +7,10 @@ before_install:
 
 script:
  - docker run -it --rm -v "$PWD"/target:/usr/src/app/target flyingraptor/cvsm-parser-dev -T 1C -o test
-
+ 
+before_deploy:
+ - docker build -f ./cvsm-git-parser/Dockerfile -t flyingraptor/cvsm-parser .
+ 
 deploy:
  provider: elasticbeanstalk
  access_key_id: "$AWS_ACCESS_KEY"
