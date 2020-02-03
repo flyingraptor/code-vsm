@@ -19,8 +19,8 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 # install maven dependency packages (keep in image)
-COPY pom.xml /usr/src/app
-COPY src /usr/src/app/src
+COPY ./cvsm-git-parser/pom.xml /usr/src/app
+COPY ./cvsm-git-parser/src /usr/src/app/src
 RUN /usr/bin/mvn -T 1C package
 
 # Run Dev Phase
