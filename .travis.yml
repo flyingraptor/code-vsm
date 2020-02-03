@@ -6,4 +6,16 @@ before_install:
  - docker build -f ./cvsm-git-parser/Dockerfile.dev -t flyingraptor/cvsm-parser-dev .
 
 script:
-- docker run -it --rm -v "$PWD"/target:/usr/src/app/target flyingraptor/cvsm-parser-dev -T 1C -o test
+ - docker run -it --rm -v "$PWD"/target:/usr/src/app/target flyingraptor/cvsm-parser-dev -T 1C -o test
+
+deploy:
+ provider: elasticbeanstalk
+ region: "eu-west-1"
+ app: "cvsm-web"
+ env: "CvsmWeb-env"
+ bucket_name: "elasticbeanstalk-eu-west-1-911928423137"
+ bucket_path: "cvsm-web"
+ on:
+  branch: master
+access_key_id: $AWS_ACCESS_KEY
+secret_access_key: $AWS_SECRET_KEY
