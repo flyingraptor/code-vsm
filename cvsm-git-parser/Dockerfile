@@ -32,4 +32,6 @@ COPY --from=builder /usr/src/app/target/cvsm-git-parser-0.0.1-SNAPSHOT.jar /app
 
 # run application
 CMD ["/usr/bin/java", "-jar", "/app/cvsm-git-parser-0.0.1-SNAPSHOT.jar"]
+
+
  
