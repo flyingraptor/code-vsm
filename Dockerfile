@@ -33,5 +33,5 @@ COPY --from=builder /usr/src/app/target/cvsm-git-parser-0.0.1-SNAPSHOT.jar /app
 EXPOSE 80
 
 # run application
-CMD ["/usr/bin/java", "-jar", "/app/cvsm-git-parser-0.0.1-SNAPSHOT.jar"]
+CMD ["/usr/bin/java", "--version"]
  
